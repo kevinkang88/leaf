@@ -17,7 +17,7 @@ myApp.run(function($ionicPlatform) {
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-    fb new Firebase("http://leafmusciapp.firebaseIO.com/")
+    fb = new Firebase("http://leafmusicapp.firebaseIO.com/")
   });
 })
 
@@ -50,6 +50,18 @@ myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
     });
   }
 
+  $scope.register = function(username,password){
+      var fbAuth = $firebaseAuth(fb);
+      fbAuth.$createUser(username,password).then(function(){
+          return fbAuth.$authWithPassword({
+            email: username,
+            password: password
+          });
+        $location.path("/todo")
+      }).catch(function(error){
+        alert("ERROR: " + error);
+      })
+  }
   
   
 });

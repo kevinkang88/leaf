@@ -1,0 +1,12 @@
+<ion-view title="Rooms" ng-init="list()">
+  <ion-nav-buttons side="right">
+    <button class="right button button-icon icon ion-plus" ng-click="create()"></button>
+  </ion-nav-buttons>
+  <ion-contet>
+    <div class="list">
+      <div ng-repeat="room in data.rooms" class="room">
+        {{room.title}}
+      </div>
+    </div>
+  </ion-content>
+</ion-view>

@@ -29,10 +29,10 @@ myApp.config(function($stateProvider,$urlRouterProvider){
       templateUrl: "templates/login.html",
       controller: "LoginController"
     })
-    .state("todo",{
-      url: "/todo",
-      templateUrl: "templates/todo.html",
-      controller: "TodoController"
+    .state("rooms",{
+      url: "/rooms",
+      templateUrl: "templates/rooms.html",
+      controller: "RoomsController"
     });
     $urlRouterProvider.otherwise("/login")
 });
@@ -44,7 +44,7 @@ myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
       email: username,
       password: password
     }).then(function(authData){
-      $location.path("/todo");
+      $location.path("/rooms");
     }).catch(function(error){
       alert("ERROR: " + error);
     });
@@ -52,16 +52,38 @@ myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
 
   $scope.register = function(username,password){
       var fbAuth = $firebaseAuth(fb);
-      fbAuth.$createUser(username,password).then(function(){
+      fbAuth.$createUser({email: username,password: password}).then(function(){
           return fbAuth.$authWithPassword({
             email: username,
             password: password
           });
-        $location.path("/todo")
+        $location.path("/rooms")
       }).catch(function(error){
         alert("ERROR: " + error);
       })
   }
-  
-  
 });
+
+myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup){
+   $scope.list = function(){
+  var fbAuth = fb.getAuth();
+    if(fbAuth){
+      var obj = $firebaseObject(fb.child("users/" + fbAuth.uid));
+      obj.$bindTo($scope,"data");
+    }
+   }
+
+   $scope.create = function(){
+    $ionicPopup.prompt({
+      title: "Enter a new room name",
+      inputType: "text"
+    }).then(function(result){
+      if(result != ""){
+        if($scope.data.hasOwnProperty("todos") !== true){
+          $scope.data.todos = [];
+        }
+        $scope.data.todos.push({title:result});
+      }
+    });
+   }
+})

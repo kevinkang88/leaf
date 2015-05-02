@@ -2,10 +2,12 @@
   <ion-nav-buttons side="right">
     <button class="right button button-icon icon ion-plus" ng-click="create()"></button>
   </ion-nav-buttons>
-  <ion-contet>
+  <ion-content>
     <div class="list">
-      <div ng-repeat="room in data.rooms" class="room">
-        {{room.title}}
+      <div ng-repeat="user in data">
+        <div ng-repeat="room in user.rooms" class="room">
+          {{room.title}}
+        </div>
       </div>
     </div>
   </ion-content>

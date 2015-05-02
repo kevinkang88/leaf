@@ -68,7 +68,9 @@ myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup){
    $scope.list = function(){
   var fbAuth = fb.getAuth();
     if(fbAuth){
-      var obj = $firebaseObject(fb.child("users/" + fbAuth.uid));
+      // below is to select individual users
+      // var obj = $firebaseObject(fb.child("users/" + fbAuth.uid));
+      var obj = $firebaseObject(fb.child("users/"));
       obj.$bindTo($scope,"data");
     }
    }

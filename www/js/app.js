@@ -65,26 +65,26 @@ myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
 });
 
 myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup){
-   $scope.list = function(){
-  var fbAuth = fb.getAuth();
+  $scope.list = function(){
+    var fbAuth = fb.getAuth();
     if(fbAuth){
       // below is to select individual users
       // var obj = $firebaseObject(fb.child("users/" + fbAuth.uid));
       var obj = $firebaseObject(fb.child("users/"));
       obj.$bindTo($scope,"data");
     }
-   }
+  }
 
-   $scope.create = function(){
+  $scope.create = function(){
     $ionicPopup.prompt({
       title: "Enter a new room name",
       inputType: "text"
     }).then(function(result){
       if(result != ""){
-        if($scope.data.hasOwnProperty("todos") !== true){
-          $scope.data.todos = [];
+        if($scope.data.hasOwnProperty("rooms") !== true){
+          $scope.data.rooms = [];
         }
-        $scope.data.todos.push({title:result});
+        $scope.data.rooms.push({title:result});
       }
     });
    }

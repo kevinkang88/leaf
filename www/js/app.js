@@ -33,6 +33,11 @@ myApp.config(function($stateProvider,$urlRouterProvider){
       url: "/rooms",
       templateUrl: "templates/rooms.html",
       controller: "RoomsController"
+    })
+    .state("room",{
+      url: "/rooms/:roomId",
+      templateUrl: "templates/room.html",
+      controller: "RoomController"
     });
     $urlRouterProvider.otherwise("/login")
 });
@@ -64,28 +69,55 @@ myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
   }
 });
 
-myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup){
+myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams){
   $scope.list = function(){
     var fbAuth = fb.getAuth();
     if(fbAuth){
       // below is to select individual users
-      // var obj = $firebaseObject(fb.child("users/" + fbAuth.uid));
-      var obj = $firebaseObject(fb.child("users/"));
-      obj.$bindTo($scope,"data");
+      var objIdx = $firebaseObject(fb.child("users/"));
+      var objShow = $firebaseObject(fb.child("users/" + fbAuth.uid));
+      objIdx.$bindTo($scope,"data");
+      objShow.$bindTo($scope,"dataShow");
     }
   }
 
   $scope.create = function(){
+    var fbAuth = fb.getAuth();
+
     $ionicPopup.prompt({
       title: "Enter a new room name",
       inputType: "text"
     }).then(function(result){
       if(result != ""){
-        if($scope.data.hasOwnProperty("rooms") !== true){
-          $scope.data.rooms = [];
+        if($scope.dataShow.hasOwnProperty("rooms") !== true){
+          $scope.dataShow.rooms = [];
         }
-        $scope.data.rooms.push({title:result});
+        $scope.dataShow.rooms.push({title: result, uid: fbAuth.uid + "_" + result + "_" + $scope.dataShow.rooms.length });
       }
     });
    }
-})
+
+   $scope.enterRoom = function(roomId){
+    $location.path("/rooms/" + roomId);
+    // $state.go('/rooms/:roomId',{roomId: roomId});
+   }
+});
+
+myApp.controller("RoomController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams){
+    $scope.listTracks = function(){      
+      var params    = location.hash.substr(8).split("_") ; 
+      var userUid   = params[0] ; 
+      var roomTitle = params[1] ;
+      var roomIdx   = params[2] ;
+      var fbAuth = fb.getAuth(); 
+      if (fbAuth){
+        var objShow = $firebaseObject(fb.child("users/" + userUid + "/rooms/" + roomIdx));
+        objShow.$bindTo($scope,"roomNode");
+      }
+    }
+    $scope.setRoomTitle = function(){
+      var params    = location.hash.substr(8).split("_") ; 
+      var roomTitle = params[1] ;
+      return roomTitle
+    }
+});

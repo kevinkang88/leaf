@@ -5,8 +5,11 @@
   <ion-content>
     <div class="list">
       <div ng-repeat="user in data">
-        <div ng-repeat="room in user.rooms" class="room">
+        <div ng-repeat="room in user.rooms" class="item item-button-right room">
           {{room.title}}
+          <button class="button button-positive" ng-click="enterRoom(room.uid)">
+            <i class="icon icon ion-headphone"></i>
+          </button>
         </div>
       </div>
     </div>

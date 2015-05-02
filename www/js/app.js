@@ -38,6 +38,11 @@ myApp.config(function($stateProvider,$urlRouterProvider){
       url: "/rooms/:roomId",
       templateUrl: "templates/room.html",
       controller: "RoomController"
+    })
+    .state("search",{
+      url: "/rooms/:roomId/search",
+      templateUrl: "templates/search.html",
+      controller: "SearchController"
     });
     $urlRouterProvider.otherwise("/login")
 });
@@ -99,7 +104,6 @@ myApp.controller("RoomsController",function($scope,$firebaseObject,$ionicPopup,$
 
    $scope.enterRoom = function(roomId){
     $location.path("/rooms/" + roomId);
-    // $state.go('/rooms/:roomId',{roomId: roomId});
    }
 });
 
@@ -111,8 +115,9 @@ myApp.controller("RoomController",function($scope,$firebaseObject,$ionicPopup,$l
       var roomIdx   = params[2] ;
       var fbAuth = fb.getAuth(); 
       if (fbAuth){
+        var roomNode = $firebaseObject(fb.child("users/" + userUid + "/rooms/" + roomIdx));
         var objShow = $firebaseObject(fb.child("users/" + userUid + "/rooms/" + roomIdx));
-        objShow.$bindTo($scope,"roomNode");
+        roomNode.$bindTo($scope,"roomNode");
       }
     }
     $scope.setRoomTitle = function(){
@@ -120,4 +125,12 @@ myApp.controller("RoomController",function($scope,$firebaseObject,$ionicPopup,$l
       var roomTitle = params[1] ;
       return roomTitle
     }
+    $scope.enterSearch = function(){
+      var roomId = $scope.roomNode.uid
+      $location.path("/rooms/" + roomId + "/search" );
+    }
+});
+
+myApp.controller("SearchController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams){
+  
 });

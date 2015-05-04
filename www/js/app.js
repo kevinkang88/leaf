@@ -3,7 +3,7 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var myApp = angular.module('starter', ['ionic','firebase'])
+var myApp = angular.module('starter', ['ionic','firebase','starter.services'])
 
 var fb = null;
 
@@ -21,7 +21,7 @@ myApp.run(function($ionicPlatform) {
   });
 })
 
-myApp.config(function($stateProvider,$urlRouterProvider){
+myApp.config(function($stateProvider,$urlRouterProvider,$httpProvider){
 
   $stateProvider
     .state("login",{
@@ -45,15 +45,26 @@ myApp.config(function($stateProvider,$urlRouterProvider){
       controller: "SearchController"
     });
     $urlRouterProvider.otherwise("/login")
+    delete $httpProvider.defaults.headers.common["X-Requested-With"]
+    $httpProvider.defaults.headers.common = {};
+    $httpProvider.defaults.headers.post = {};
+    $httpProvider.defaults.headers.put = {};
+    $httpProvider.defaults.headers.patch = {};
+    console.log("Route loaded--;]")
 });
 
-myApp.controller("LoginController",function($scope,$firebaseAuth,$location){
+myApp.controller("LoginController",function($scope,$firebaseAuth,$location,LeafApi,$firebaseObject){
   $scope.login = function(username,password){
     var fbAuth = $firebaseAuth(fb);
     fbAuth.$authWithPassword({
       email: username,
       password: password
     }).then(function(authData){
+      var userObj = $firebaseObject(fb.child("users/" + authData.uid));
+      userObj.$bindTo($scope,"userObj");
+      LeafApi.getAccess().then(function(messages){
+        $scope.userObj.accessToken = messages["accessToken"] ; 
+      });
       $location.path("/rooms");
     }).catch(function(error){
       alert("ERROR: " + error);
@@ -132,5 +143,5 @@ myApp.controller("RoomController",function($scope,$firebaseObject,$ionicPopup,$l
 });
 
 myApp.controller("SearchController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams){
-  
+
 });

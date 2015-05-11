@@ -142,6 +142,34 @@ myApp.controller("RoomController",function($scope,$firebaseObject,$ionicPopup,$l
     }
 });
 
-myApp.controller("SearchController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams){
+myApp.controller("SearchController",function($scope,$firebaseObject,$ionicPopup,$location,$scope,$stateParams,LeafApi){
+  $scope.initCurrentUser = function(){
+    var fbAuth = fb.getAuth();
+    if(fbAuth){
+      var userObj = $firebaseObject(fb.child("users/"+ fbAuth.uid));
+      userObj.$bindTo($scope,"currentUserNode");
+    }
+  }
+  $scope.searchEnter = function(query){
+    var token = $scope.currentUserNode.accessToken ; 
+    LeafApi.searchSC(query,token).then(function(messages){
+      
+    })
+  }
+});
 
+
+
+myApp.directive('ngEnter', function () {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+
+                event.preventDefault();
+            }
+        });
+    };
 });
